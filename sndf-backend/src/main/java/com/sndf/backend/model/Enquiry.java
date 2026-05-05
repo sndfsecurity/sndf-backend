@@ -45,8 +45,12 @@ public class Enquiry {
     @Column(nullable = false)
     @NotNull(message = "Source is required")
     private SourceType source;
+    
+    @Column(nullable = false)
+    private String status = "NEW";
 
-    // ✅ Created At
+
+	// ✅ Created At
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -78,6 +82,14 @@ public class Enquiry {
 
     public SourceType getSource() { return source; }
     public void setSource(SourceType source) { this.source = source; }
+    
+    public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 }
