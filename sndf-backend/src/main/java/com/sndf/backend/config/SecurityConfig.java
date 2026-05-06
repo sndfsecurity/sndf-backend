@@ -27,7 +27,7 @@ public class SecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
-   
+    
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,7 +35,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
 
-            .cors(Customizer.withDefaults())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -56,7 +56,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-    
     
 
     // 🔐 PASSWORD ENCODER
