@@ -34,6 +34,21 @@ public class AuthController {
     
     
     
+    @GetMapping("/create-admin")
+    public String createAdmin() {
+
+        Admin admin = new Admin();
+
+        admin.setEmail("admin@gmail.com");
+
+        admin.setPassword(passwordEncoder.encode("admin123"));
+
+        adminRepo.save(admin);
+
+        return "Admin Created";
+    }
+    
+    
 
     
   
@@ -55,14 +70,7 @@ public class AuthController {
             }
 
         // 🔴 STEP 2: PASSWORD CHECK
-        
-        
-        System.out.println(
-        	    passwordEncoder.matches(
-        	        "admin123",
-        	        "$2a$10$vxbu84ql7CdqVxkOyj0z4uk/bKBZKlldiLkG2bkCZnKfk1af0R66"
-        	    )
-        	);
+       
         
     
 
