@@ -52,6 +52,18 @@ public class AuthController {
             }
 
         // 🔴 STEP 2: PASSWORD CHECK
+        
+        
+        System.out.println("Entered password: " + req.getPassword());
+        System.out.println("DB hash: " + admin.getPassword());
+        System.out.println("Password Match: " +
+                passwordEncoder.matches(req.getPassword(), admin.getPassword()));
+
+        if (!passwordEncoder.matches(req.getPassword(), admin.getPassword())) {
+            loginAttemptService.loginFailed(email);
+            return ResponseEntity.status(401).body("Invalid credentials");
+        }
+        
         if (!passwordEncoder.matches(req.getPassword(), admin.getPassword())) {
             loginAttemptService.loginFailed(email);
             return ResponseEntity.status(401).body("Invalid credentials");        
