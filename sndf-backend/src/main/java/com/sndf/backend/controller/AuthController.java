@@ -33,6 +33,21 @@ public class AuthController {
     private LoginAttemptService loginAttemptService;
     
     
+    
+//    @GetMapping("/create-admin")
+//    public String createAdmin() {
+//
+//        Admin admin = new Admin();
+//
+//        admin.setEmail("admin@gmail.com");
+//
+//        admin.setPassword(passwordEncoder.encode("admin123"));
+//
+//        adminRepo.save(admin);
+//
+//        return "Admin Created";
+//    }
+    
   
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest req) {
