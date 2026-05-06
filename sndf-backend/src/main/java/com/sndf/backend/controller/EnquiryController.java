@@ -1,6 +1,7 @@
 package com.sndf.backend.controller;
 
 import com.sndf.backend.model.Enquiry;
+
 import com.sndf.backend.service.EnquiryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
