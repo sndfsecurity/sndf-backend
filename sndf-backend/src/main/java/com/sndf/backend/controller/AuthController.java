@@ -34,19 +34,7 @@ public class AuthController {
     
     
     
-//    @GetMapping("/create-admin")
-//    public String createAdmin() {
-//
-//        Admin admin = new Admin();
-//
-//        admin.setEmail("admin@gmail.com");
-//
-//        admin.setPassword(passwordEncoder.encode("admin123"));
-//
-//        adminRepo.save(admin);
-//
-//        return "Admin Created";
-//    }
+
     
   
     @PostMapping("/login")
@@ -69,10 +57,12 @@ public class AuthController {
         // 🔴 STEP 2: PASSWORD CHECK
         
         
-        System.out.println("Entered password: " + req.getPassword());
-        System.out.println("DB hash: " + admin.getPassword());
-        System.out.println("Password Match: " +
-                passwordEncoder.matches(req.getPassword(), admin.getPassword()));
+        System.out.println(
+        	    passwordEncoder.matches(
+        	        "admin123",
+        	        "$2a$10$vxbu84ql7CdqVxkOyj0z4uk/bKBZKlldiLkG2bkCZnKfk1af0R66"
+        	    )
+        	);
         
     
 
