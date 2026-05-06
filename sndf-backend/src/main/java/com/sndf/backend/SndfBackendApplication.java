@@ -11,7 +11,6 @@ public class SndfBackendApplication {
 		SpringApplication.run(SndfBackendApplication.class, args);
 		
 
-		System.out.println(new BCryptPasswordEncoder().encode("admin123"));
 	}
 
 }
