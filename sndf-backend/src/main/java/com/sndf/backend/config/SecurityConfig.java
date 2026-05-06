@@ -1,5 +1,7 @@
 package com.sndf.backend.config;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,28 +32,38 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            // ✅ ENABLE CORS (VERY IMPORTANT)
+            // ✅ ENABLE CORS
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
+            // ❌ DISABLE CSRF
             .csrf(csrf -> csrf.disable())
 
+            // ✅ API AUTH RULES
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll()     // login allowed
-                
-                .requestMatchers("/api/enquiry").permitAll()        // ✅ public form submit
-                .requestMatchers("/api/enquiry/**").authenticated() // 🔒 admin operations
-                
+
+                // LOGIN API
+                .requestMatchers("/auth/**").permitAll()
+
+                // PUBLIC ENQUIRY FORM
+                .requestMatchers("/api/enquiry").permitAll()
+
+                // ADMIN ENQUIRY APIs
+                .requestMatchers("/api/enquiry/**").authenticated()
+
+                // BLOCK OTHER APIs
                 .anyRequest().denyAll()
             )
 
+            // ✅ JWT SESSIONLESS
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
 
+            // ❌ DISABLE DEFAULT LOGIN
             .httpBasic(httpBasic -> httpBasic.disable())
             .formLogin(form -> form.disable());
 
-        // 🔥 JWT FILTER
+        // ✅ JWT FILTER
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -71,13 +83,21 @@ public class SecurityConfig {
 
         config.setAllowCredentials(true);
 
-        // ✅ your frontend URL
-        config.addAllowedOrigin("http://localhost:5173");
+        // ✅ ALLOWED FRONTEND URLS
+        config.setAllowedOrigins(Arrays.asList(
+            "http://localhost:5173",
+            "https://www.sndfndf.com"
+        ));
 
+        // ✅ ALLOW ALL HEADERS
         config.addAllowedHeader("*");
+
+        // ✅ ALLOW ALL METHODS
         config.addAllowedMethod("*");
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
         source.registerCorsConfiguration("/**", config);
 
         return source;
