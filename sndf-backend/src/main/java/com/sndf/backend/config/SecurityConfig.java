@@ -27,47 +27,37 @@ public class SecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
+   
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-
-            // ✅ ENABLE CORS
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
-            // ❌ DISABLE CSRF
             .csrf(csrf -> csrf.disable())
 
-            // ✅ AUTHORIZATION RULES
-            .authorizeHttpRequests(auth -> auth
+            .cors(Customizer.withDefaults())
 
-                // LOGIN APIs
-                .requestMatchers("/auth/**").permitAll()
-
-                // PUBLIC ENQUIRY FORM
-                .requestMatchers("/api/enquiry").permitAll()
-
-                // ADMIN APIs
-                .requestMatchers("/api/enquiry/**").authenticated()
-
-                // BLOCK EVERYTHING ELSE
-                .anyRequest().denyAll()
-            )
-
-            // ✅ JWT STATELESS SESSION
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
 
-            // ❌ DISABLE DEFAULT LOGIN
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/api/enquiry").permitAll()
+                .requestMatchers("/api/enquiry/**").authenticated()
+                .anyRequest().permitAll()
+            )
+
             .httpBasic(httpBasic -> httpBasic.disable())
+
             .formLogin(form -> form.disable());
 
-        // ✅ JWT FILTER
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+    
+    
 
     // 🔐 PASSWORD ENCODER
     @Bean
