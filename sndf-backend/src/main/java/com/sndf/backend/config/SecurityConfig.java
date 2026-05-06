@@ -27,34 +27,34 @@ public class SecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
-    // 🔐 MAIN SECURITY CONFIG
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+
             // ✅ ENABLE CORS
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
             // ❌ DISABLE CSRF
             .csrf(csrf -> csrf.disable())
 
-            // ✅ API AUTH RULES
+            // ✅ AUTHORIZATION RULES
             .authorizeHttpRequests(auth -> auth
 
-                // LOGIN API
+                // LOGIN APIs
                 .requestMatchers("/auth/**").permitAll()
 
                 // PUBLIC ENQUIRY FORM
                 .requestMatchers("/api/enquiry").permitAll()
 
-                // ADMIN ENQUIRY APIs
+                // ADMIN APIs
                 .requestMatchers("/api/enquiry/**").authenticated()
 
-                // BLOCK OTHER APIs
+                // BLOCK EVERYTHING ELSE
                 .anyRequest().denyAll()
             )
 
-            // ✅ JWT SESSIONLESS
+            // ✅ JWT STATELESS SESSION
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
@@ -75,25 +75,36 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // 🌐 CORS CONFIGURATION
+    // 🌐 CORS CONFIG
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowCredentials(true);
-
-        // ✅ ALLOWED FRONTEND URLS
+        // ✅ FRONTEND DOMAINS
         config.setAllowedOrigins(Arrays.asList(
             "http://localhost:5173",
-            "https://www.sndfndf.com"
+            "https://www.sndfndf.com",
+            "https://sndfndf.com"
         ));
 
-        // ✅ ALLOW ALL HEADERS
-        config.addAllowedHeader("*");
+        // ✅ METHODS
+        config.setAllowedMethods(Arrays.asList(
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "OPTIONS"
+        ));
 
-        // ✅ ALLOW ALL METHODS
-        config.addAllowedMethod("*");
+        // ✅ HEADERS
+        config.setAllowedHeaders(Arrays.asList("*"));
+
+        // ✅ EXPOSE HEADERS
+        config.setExposedHeaders(Arrays.asList("Authorization"));
+
+        // ✅ ALLOW COOKIES / TOKENS
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
