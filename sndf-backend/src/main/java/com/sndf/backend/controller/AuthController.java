@@ -3,6 +3,7 @@ package com.sndf.backend.controller;
 import com.sndf.backend.dto.LoginRequest;
 
 
+
 import com.sndf.backend.model.Admin;
 import com.sndf.backend.repository.AdminRepository;
 import com.sndf.backend.service.LoginAttemptService;
@@ -32,6 +33,7 @@ public class AuthController {
     @Autowired
     private LoginAttemptService loginAttemptService;
      
+    
   
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest req) {

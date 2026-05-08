@@ -12,4 +12,6 @@ import com.sndf.backend.model.SourceType;
 public interface EnquiryRepository extends JpaRepository<Enquiry, Long> {
 	
 	List<Enquiry> findBySource(SourceType source);
+	
+	long countByStatus(String status);
 }
