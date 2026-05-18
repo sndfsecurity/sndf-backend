@@ -1,6 +1,7 @@
 package com.sndf.backend.service;
 
 import com.sndf.backend.model.Enquiry;
+
 import com.sndf.backend.repository.EnquiryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -10,21 +11,62 @@ import com.sndf.backend.model.SourceType;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 @Service
 public class EnquiryService {
 
     @Autowired
     private EnquiryRepository enquiryRepository;
+    
+    
+   
+  
+   
+    public Page<Enquiry> getPaginatedEnquiries(
+            int page,
+            int size,
+            String source
+    ) {
+
+        Pageable pageable =
+                PageRequest.of(
+                        page,
+                        size,
+                        Sort.by("createdAt").descending()
+                );
+
+        if (source != null && !source.isEmpty()) {
+
+            SourceType sourceEnum =
+                    SourceType.valueOf(
+                            source.toUpperCase()
+                    );
+
+            return enquiryRepository
+                    .findBySource(
+                            sourceEnum,
+                            pageable
+                    );
+        }
+
+        return enquiryRepository.findAll(pageable);
+    }
+    
 
     // ✅ Save enquiry
     public Enquiry saveEnquiry(Enquiry enquiry) {
         return enquiryRepository.save(enquiry);
     }
+    
 
     // ✅ Get all enquiries (latest first)
     public List<Enquiry> getAllEnquiries() {
         return enquiryRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
     }
+    
     
     public List<Enquiry> getEnquiriesBySource(String source) {
         if (source != null && !source.isEmpty()) {
@@ -32,20 +74,10 @@ public class EnquiryService {
             return enquiryRepository.findBySource(sourceEnum);
         }
         return enquiryRepository.findAll();
+        
     }
     
     
-    
-//    public Enquiry updateStatus(Long id, String status) {
-//
-//        Enquiry enquiry = enquiryRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Enquiry not found"));
-//
-//        enquiry.setStatus(status);
-//        return enquiryRepository.save(enquiry);
-//    }
-//    
-//    
     
     public Enquiry updateStatus(Long id, String status) {
 

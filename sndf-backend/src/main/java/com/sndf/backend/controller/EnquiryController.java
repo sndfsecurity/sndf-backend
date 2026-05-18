@@ -2,6 +2,7 @@ package com.sndf.backend.controller;
 
 import com.sndf.backend.model.Enquiry;
 
+
 import com.sndf.backend.service.EnquiryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.data.domain.Page;
+
 
 @RestController
 @RequestMapping("/api/enquiry")
@@ -30,22 +34,34 @@ public class EnquiryController {
     }
 
     // ✅ GET ALL ENQUIRIES
+//    @GetMapping
+//    public ResponseEntity<List<Enquiry>> getEnquiries(
+//            @RequestParam(required = false) String source
+//    ) {
+//        return ResponseEntity.ok(enquiryService.getEnquiriesBySource(source));
+//    }
+    
+    
+    
     @GetMapping
-    public ResponseEntity<List<Enquiry>> getEnquiries(
+    public ResponseEntity<?> getEnquiries(
+
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
             @RequestParam(required = false) String source
+
     ) {
-        return ResponseEntity.ok(enquiryService.getEnquiriesBySource(source));
+
+        return ResponseEntity.ok(
+                enquiryService.getPaginatedEnquiries(
+                        page,
+                        size,
+                        source
+                )
+        );
     }
     
     
-//    @PutMapping("/{id}/status")
-//    public ResponseEntity<Enquiry> updateStatus(
-//            @PathVariable Long id,
-//            @RequestParam String status) {
-//
-//        Enquiry updated = enquiryService.updateStatus(id, status);
-//        return ResponseEntity.ok(updated);
-//    }
     
     
     @PutMapping("/{id}/status")
@@ -62,9 +78,11 @@ public class EnquiryController {
     }
     
     
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEnquiry(@PathVariable Long id) {
         enquiryService.deleteEnquiry(id);
         return ResponseEntity.ok("Enquiry deleted successfully");
     }
+    
 }
