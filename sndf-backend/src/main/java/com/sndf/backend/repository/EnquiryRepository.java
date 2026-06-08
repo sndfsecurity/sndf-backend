@@ -2,7 +2,7 @@ package com.sndf.backend.repository;
 
 import com.sndf.backend.model.Enquiry;
 
-
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,4 +26,21 @@ public interface EnquiryRepository extends JpaRepository<Enquiry, Long> {
 	        SourceType source,
 	        Pageable pageable
 	);
+	
+	
+	boolean existsByPhoneAndSourceAndCreatedAtAfter(
+	        String phone,
+	        SourceType source,
+	        LocalDateTime dateTime
+	);
+
+	boolean existsByPhoneAndServiceAndSourceAndCreatedAtAfter(
+	        String phone,
+	        String service,
+	        SourceType source,
+	        LocalDateTime dateTime
+	);
+	
+	
+	
 }

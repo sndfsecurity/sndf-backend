@@ -2,6 +2,7 @@ package com.sndf.backend.service;
 
 import com.sndf.backend.model.Enquiry;
 
+
 import com.sndf.backend.repository.EnquiryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.sndf.backend.model.SourceType;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -22,9 +24,6 @@ public class EnquiryService {
     private EnquiryRepository enquiryRepository;
     
     
-   
-  
-   
     public Page<Enquiry> getPaginatedEnquiries(
             int page,
             int size,
@@ -57,7 +56,57 @@ public class EnquiryService {
     
 
     // ✅ Save enquiry
+//    public Enquiry saveEnquiry(Enquiry enquiry) {
+//        return enquiryRepository.save(enquiry);
+//    }
+//    
+    
+    
+    
+ // ✅ Save enquiry
+    
     public Enquiry saveEnquiry(Enquiry enquiry) {
+
+        LocalDateTime last24Hours =
+                LocalDateTime.now().minusHours(24);
+
+        // QUICK ENQUIRY
+        if (enquiry.getSource() == SourceType.QUICK) {
+
+            boolean alreadySubmitted =
+                    enquiryRepository
+                            .existsByPhoneAndSourceAndCreatedAtAfter(
+                                    enquiry.getPhone(),
+                                    SourceType.QUICK,
+                                    last24Hours
+                            );
+
+            if (alreadySubmitted) {
+                throw new RuntimeException(
+                        "You have already submitted a Quick Enquiry today."
+                );
+            }
+        }
+
+        // CONTACT FORM
+        if (enquiry.getSource() == SourceType.CONTACT) {
+
+            boolean alreadySubmitted =
+                    enquiryRepository
+                            .existsByPhoneAndServiceAndSourceAndCreatedAtAfter(
+                                    enquiry.getPhone(),
+                                    enquiry.getService(),
+                                    SourceType.CONTACT,
+                                    last24Hours
+                            );
+
+            if (alreadySubmitted) {
+                throw new RuntimeException(
+                        "You have already submitted an enquiry for this service today."
+                );
+            }
+        }
+
         return enquiryRepository.save(enquiry);
     }
     

@@ -27,20 +27,34 @@ public class EnquiryController {
     
 
     // ✅ SAVE ENQUIRY
-    @PostMapping
-    public ResponseEntity<Enquiry> createEnquiry(@Valid @RequestBody Enquiry enquiry) {
-        Enquiry saved = enquiryService.saveEnquiry(enquiry);
-        return ResponseEntity.ok(saved);
-    }
-
-    // ✅ GET ALL ENQUIRIES
-//    @GetMapping
-//    public ResponseEntity<List<Enquiry>> getEnquiries(
-//            @RequestParam(required = false) String source
-//    ) {
-//        return ResponseEntity.ok(enquiryService.getEnquiriesBySource(source));
-//    }
     
+    @PostMapping
+    public ResponseEntity<?> createEnquiry(
+            @Valid @RequestBody Enquiry enquiry) {
+
+        try {
+
+            Enquiry saved =
+                    enquiryService.saveEnquiry(enquiry);
+
+            return ResponseEntity.ok(saved);
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+    
+    
+//    @PostMapping
+//    public ResponseEntity<Enquiry> createEnquiry(@Valid @RequestBody Enquiry enquiry) {
+//        Enquiry saved = enquiryService.saveEnquiry(enquiry);
+//        return ResponseEntity.ok(saved);
+//    }
+
+ 
     
     
     @GetMapping
