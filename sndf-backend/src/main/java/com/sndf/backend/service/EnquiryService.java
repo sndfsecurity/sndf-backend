@@ -1,8 +1,6 @@
 package com.sndf.backend.service;
 
 import com.sndf.backend.model.Enquiry;
-
-
 import com.sndf.backend.repository.EnquiryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -27,7 +25,8 @@ public class EnquiryService {
     public Page<Enquiry> getPaginatedEnquiries(
             int page,
             int size,
-            String source
+            String source,
+            String status
     ) {
 
         Pageable pageable =
@@ -37,30 +36,45 @@ public class EnquiryService {
                         Sort.by("createdAt").descending()
                 );
 
+        // SOURCE + STATUS FILTER
+        if (source != null && !source.isEmpty()
+                && status != null && !status.isEmpty()) {
+
+            SourceType sourceEnum =
+                    SourceType.valueOf(source.toUpperCase());
+
+            return enquiryRepository.findBySourceAndStatus(
+                    sourceEnum,
+                    status.toUpperCase(),
+                    pageable
+            );
+        }
+
+        // SOURCE ONLY
         if (source != null && !source.isEmpty()) {
 
             SourceType sourceEnum =
-                    SourceType.valueOf(
-                            source.toUpperCase()
-                    );
+                    SourceType.valueOf(source.toUpperCase());
 
-            return enquiryRepository
-                    .findBySource(
-                            sourceEnum,
-                            pageable
-                    );
+            return enquiryRepository.findBySource(
+                    sourceEnum,
+                    pageable
+            );
         }
 
+        // STATUS ONLY
+        if (status != null && !status.isEmpty()) {
+
+            return enquiryRepository.findByStatus(
+                    status.toUpperCase(),
+                    pageable
+            );
+        }
+
+        // ALL
         return enquiryRepository.findAll(pageable);
     }
-    
 
-    // ✅ Save enquiry
-//    public Enquiry saveEnquiry(Enquiry enquiry) {
-//        return enquiryRepository.save(enquiry);
-//    }
-//    
-    
     
     
  // ✅ Save enquiry

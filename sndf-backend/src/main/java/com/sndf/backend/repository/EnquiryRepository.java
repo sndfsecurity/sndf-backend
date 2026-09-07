@@ -1,7 +1,6 @@
 package com.sndf.backend.repository;
 
 import com.sndf.backend.model.Enquiry;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,6 +23,17 @@ public interface EnquiryRepository extends JpaRepository<Enquiry, Long> {
 	
 	Page<Enquiry> findBySource(
 	        SourceType source,
+	        Pageable pageable
+	);
+	
+	Page<Enquiry> findByStatus(
+	        String status,
+	        Pageable pageable
+	);
+
+	Page<Enquiry> findBySourceAndStatus(
+	        SourceType source,
+	        String status,
 	        Pageable pageable
 	);
 	

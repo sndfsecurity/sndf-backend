@@ -1,8 +1,6 @@
 package com.sndf.backend.controller;
 
 import com.sndf.backend.model.Enquiry;
-
-
 import com.sndf.backend.service.EnquiryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,21 +46,16 @@ public class EnquiryController {
     }
     
     
-//    @PostMapping
-//    public ResponseEntity<Enquiry> createEnquiry(@Valid @RequestBody Enquiry enquiry) {
-//        Enquiry saved = enquiryService.saveEnquiry(enquiry);
-//        return ResponseEntity.ok(saved);
-//    }
-
- 
-    
-    
     @GetMapping
     public ResponseEntity<?> getEnquiries(
 
             @RequestParam(defaultValue = "0") int page,
+
             @RequestParam(defaultValue = "5") int size,
-            @RequestParam(required = false) String source
+
+            @RequestParam(required = false) String source,
+
+            @RequestParam(required = false) String status
 
     ) {
 
@@ -70,7 +63,8 @@ public class EnquiryController {
                 enquiryService.getPaginatedEnquiries(
                         page,
                         size,
-                        source
+                        source,
+                        status
                 )
         );
     }
