@@ -26,7 +26,8 @@ public class EnquiryService {
             int page,
             int size,
             String source,
-            String status
+            String status,
+            String search
     ) {
 
         Pageable pageable =
@@ -35,6 +36,59 @@ public class EnquiryService {
                         size,
                         Sort.by("createdAt").descending()
                 );
+        
+	        boolean hasSearch =
+	                search != null &&
+	                !search.trim().isEmpty();
+	
+	        search = hasSearch ? search.trim() : null;
+	        
+	        if (hasSearch
+	                && source != null && !source.isEmpty()
+	                && status != null && !status.isEmpty()) {
+
+	            SourceType sourceEnum =
+	                    SourceType.valueOf(source.toUpperCase());
+
+	            return enquiryRepository.searchBySourceAndStatus(
+	                    sourceEnum,
+	                    status.toUpperCase(),
+	                    search,
+	                    pageable
+	            );
+	        }
+	        
+	        if (hasSearch
+	                && source != null && !source.isEmpty()) {
+
+	            SourceType sourceEnum =
+	                    SourceType.valueOf(source.toUpperCase());
+
+	            return enquiryRepository.searchBySource(
+	                    sourceEnum,
+	                    search,
+	                    pageable
+	            );
+	        }
+	        
+	        if (hasSearch
+	                && status != null && !status.isEmpty()) {
+
+	            return enquiryRepository.searchByStatus(
+	                    status.toUpperCase(),
+	                    search,
+	                    pageable
+	            );
+	        }
+	        
+	        if (hasSearch) {
+
+	            return enquiryRepository.searchAll(
+	                    search,
+	                    pageable
+	            );
+	        }
+	        
 
         // SOURCE + STATUS FILTER
         if (source != null && !source.isEmpty()

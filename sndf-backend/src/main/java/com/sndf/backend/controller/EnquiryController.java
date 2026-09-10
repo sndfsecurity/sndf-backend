@@ -44,8 +44,7 @@ public class EnquiryController {
                     .body(e.getMessage());
         }
     }
-    
-    
+   
     @GetMapping
     public ResponseEntity<?> getEnquiries(
 
@@ -55,17 +54,22 @@ public class EnquiryController {
 
             @RequestParam(required = false) String source,
 
-            @RequestParam(required = false) String status
+            @RequestParam(required = false) String status,
 
-    ) {
+            @RequestParam(required = false) String search
+
+    )
+    
+    {
 
         return ResponseEntity.ok(
-                enquiryService.getPaginatedEnquiries(
-                        page,
-                        size,
-                        source,
-                        status
-                )
+        		enquiryService.getPaginatedEnquiries(
+        		        page,
+        		        size,
+        		        source,
+        		        status,
+        		        search
+        		)
         );
     }
     
