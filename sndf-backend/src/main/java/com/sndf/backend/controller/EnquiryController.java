@@ -13,6 +13,8 @@ import java.util.Map;
 
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
+
 
 @RestController
 @RequestMapping("/api/enquiry")
@@ -56,7 +58,9 @@ public class EnquiryController {
 
             @RequestParam(required = false) String status,
 
-            @RequestParam(required = false) String search
+            @RequestParam(required = false) String search,
+
+            @RequestParam(required = false) LocalDate date
 
     )
     
@@ -68,12 +72,11 @@ public class EnquiryController {
         		        size,
         		        source,
         		        status,
-        		        search
+        		        search,
+        		        date
         		)
         );
     }
-    
-    
     
     
     @PutMapping("/{id}/status")

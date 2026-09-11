@@ -117,5 +117,52 @@ public interface EnquiryRepository extends JpaRepository<Enquiry, Long> {
 			);
 	
 	
+	// date filter
+	
+	@Query("""
+	        SELECT e FROM Enquiry e
+	        WHERE e.createdAt >= :startDate
+	        AND e.createdAt < :endDate
+	        """)
+	Page<Enquiry> findByDate(
+	        @Param("startDate") LocalDateTime startDate,
+	        @Param("endDate") LocalDateTime endDate,
+	        Pageable pageable
+	);
+	
+	
+	// date + search + source + status filter
+	@Query("""
+	        SELECT e FROM Enquiry e
+	        WHERE e.createdAt >= :startDate
+	        AND e.createdAt < :endDate
+
+	        AND (
+	            :source IS NULL
+	            OR e.source = :source
+	        )
+
+	        AND (
+	            :status IS NULL
+	            OR e.status = :status
+	        )
+
+	        AND (
+	            :search IS NULL
+	            OR LOWER(e.name) LIKE LOWER(CONCAT('%', :search, '%'))
+	            OR e.phone LIKE CONCAT('%', :search, '%')
+	            OR LOWER(e.service) LIKE LOWER(CONCAT('%', :search, '%'))
+	        )
+	        """)
+	Page<Enquiry> searchByDateWithFilters(
+	        @Param("startDate") LocalDateTime startDate,
+	        @Param("endDate") LocalDateTime endDate,
+	        @Param("source") SourceType source,
+	        @Param("status") String status,
+	        @Param("search") String search,
+	        Pageable pageable
+	);
+	
+	
 	
 }

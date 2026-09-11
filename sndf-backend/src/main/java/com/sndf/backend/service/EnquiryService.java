@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.sndf.backend.model.SourceType;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,13 +22,20 @@ public class EnquiryService {
     @Autowired
     private EnquiryRepository enquiryRepository;
     
-    
     public Page<Enquiry> getPaginatedEnquiries(
+
             int page,
+
             int size,
+
             String source,
+
             String status,
-            String search
+
+            String search,
+
+            LocalDate date
+
     ) {
 
         Pageable pageable =
@@ -36,59 +44,95 @@ public class EnquiryService {
                         size,
                         Sort.by("createdAt").descending()
                 );
-        
-	        boolean hasSearch =
-	                search != null &&
-	                !search.trim().isEmpty();
-	
-	        search = hasSearch ? search.trim() : null;
-	        
-	        if (hasSearch
-	                && source != null && !source.isEmpty()
-	                && status != null && !status.isEmpty()) {
 
-	            SourceType sourceEnum =
-	                    SourceType.valueOf(source.toUpperCase());
+        boolean hasSearch =
+                search != null &&
+                !search.trim().isEmpty();
 
-	            return enquiryRepository.searchBySourceAndStatus(
-	                    sourceEnum,
-	                    status.toUpperCase(),
-	                    search,
-	                    pageable
-	            );
-	        }
-	        
-	        if (hasSearch
-	                && source != null && !source.isEmpty()) {
+        search = hasSearch ? search.trim() : null;
 
-	            SourceType sourceEnum =
-	                    SourceType.valueOf(source.toUpperCase());
 
-	            return enquiryRepository.searchBySource(
-	                    sourceEnum,
-	                    search,
-	                    pageable
-	            );
-	        }
-	        
-	        if (hasSearch
-	                && status != null && !status.isEmpty()) {
+        // DATE FILTER
+        // If date is selected, handle date + source + status + search together
+        if (date != null) {
 
-	            return enquiryRepository.searchByStatus(
-	                    status.toUpperCase(),
-	                    search,
-	                    pageable
-	            );
-	        }
-	        
-	        if (hasSearch) {
+            LocalDateTime startDate =
+                    date.atStartOfDay();
 
-	            return enquiryRepository.searchAll(
-	                    search,
-	                    pageable
-	            );
-	        }
-	        
+            LocalDateTime endDate =
+                    date.plusDays(1).atStartOfDay();
+
+            SourceType sourceEnum = null;
+
+            if (source != null && !source.isEmpty()) {
+                sourceEnum =
+                        SourceType.valueOf(source.toUpperCase());
+            }
+
+            String statusValue = null;
+
+            if (status != null && !status.isEmpty()) {
+                statusValue = status.toUpperCase();
+            }
+
+            return enquiryRepository.searchByDateWithFilters(
+                    startDate,
+                    endDate,
+                    sourceEnum,
+                    statusValue,
+                    search,
+                    pageable
+            );
+        }
+
+
+        // EXISTING SEARCH + SOURCE + STATUS FILTER
+        if (hasSearch
+                && source != null && !source.isEmpty()
+                && status != null && !status.isEmpty()) {
+
+            SourceType sourceEnum =
+                    SourceType.valueOf(source.toUpperCase());
+
+            return enquiryRepository.searchBySourceAndStatus(
+                    sourceEnum,
+                    status.toUpperCase(),
+                    search,
+                    pageable
+            );
+        }
+
+        if (hasSearch
+                && source != null && !source.isEmpty()) {
+
+            SourceType sourceEnum =
+                    SourceType.valueOf(source.toUpperCase());
+
+            return enquiryRepository.searchBySource(
+                    sourceEnum,
+                    search,
+                    pageable
+            );
+        }
+
+        if (hasSearch
+                && status != null && !status.isEmpty()) {
+
+            return enquiryRepository.searchByStatus(
+                    status.toUpperCase(),
+                    search,
+                    pageable
+            );
+        }
+
+        if (hasSearch) {
+
+            return enquiryRepository.searchAll(
+                    search,
+                    pageable
+            );
+        }
+
 
         // SOURCE + STATUS FILTER
         if (source != null && !source.isEmpty()
@@ -104,6 +148,7 @@ public class EnquiryService {
             );
         }
 
+
         // SOURCE ONLY
         if (source != null && !source.isEmpty()) {
 
@@ -116,6 +161,7 @@ public class EnquiryService {
             );
         }
 
+
         // STATUS ONLY
         if (status != null && !status.isEmpty()) {
 
@@ -124,6 +170,7 @@ public class EnquiryService {
                     pageable
             );
         }
+
 
         // ALL
         return enquiryRepository.findAll(pageable);

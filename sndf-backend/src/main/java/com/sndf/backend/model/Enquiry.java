@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
         @Index(name = "idx_created_at", columnList = "created_at")
 })
 public class Enquiry {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
